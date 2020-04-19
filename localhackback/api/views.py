@@ -7,7 +7,8 @@ from .models import Day
 
 
 def cases(request):
-    df = pd.read_csv('..\\..\\Cases.csv')
+    df = pd.read_csv('/home/denchik/Local_Hack
+Cases.csv')
     data = {}
     obj = Day.objects.all()
     for o in obj:
@@ -29,7 +30,8 @@ def deaths(request):
 
 
 def recoveries(request):
-    df = pd.read_csv('..\\..\\Recovery.csv')
+    df = pd.read_csv('/home/denchik/Local_Hack
+Recovery.csv')
     data = {}
     for col in df.columns:
         if 'Unnamed' not in col:
@@ -45,9 +47,12 @@ def index(request):
 
 #
 # def bd(request):
-#     recoveries = pd.read_csv('..\\..\\Recovery.csv')
-#     cases = pd.read_csv('..\\..\\Cases.csv')
-#     deaths = pd.read_csv('..\\..\\Deaths.csv')
+#     recoveries = pd.read_csv('/home/denchik/Local_Hack
+Recovery.csv')
+#     cases = pd.read_csv('/home/denchik/Local_Hack
+Cases.csv')
+#     deaths = pd.read_csv('/home/denchik/Local_Hack
+Deaths.csv')
 #     for i in range(len(recoveries)):
 #         for col in recoveries.columns:
 #             if 'Unnamed' not in col:
@@ -72,7 +77,8 @@ def graph(request):
 
 
 def predict(request):
-    df = pd.read_csv('..\\..\\predictions.csv')
+    df = pd.read_csv('/home/denchik/Local_Hack
+predictions.csv')
     cases = df[0:7]
     deaths = df[7:14]
     recoveries = df[14:21]
