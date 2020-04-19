@@ -6,7 +6,7 @@ from .models import Day
 
 
 def cases(request):
-    df = pd.read_csv('C:\\Users\\hp\\Downloads\\cases.csv')
+    df = pd.read_csv('/home/artur/Desktop/Local_Hack_files/Local_Hack/Cases.csv')
     data = {}
     for col in df.columns:
         if 'Unnamed' not in col:
@@ -17,7 +17,7 @@ def cases(request):
 
 
 def deaths(request):
-    df = pd.read_csv('C:\\Users\\hp\\Downloads\\deaths.csv')
+    df = pd.read_csv('/home/artur/Desktop/Local_Hack_files/Local_Hack/Deaths.csv' )
     data = {}
     for col in df.columns:
         if 'Unnamed' not in col:
@@ -28,7 +28,7 @@ def deaths(request):
 
 
 def recoveries(request):
-    df = pd.read_csv('C:\\Users\\hp\\Downloads\\recovery.csv')
+    df = pd.read_csv('/home/artur/Desktop/Local_Hack_files/Local_Hack/Recovery.csv')
     data = {}
     for col in df.columns:
         if 'Unnamed' not in col:
@@ -37,6 +37,11 @@ def recoveries(request):
                 data[col].append({'time': df['Unnamed: 0'][i], 'cases': int(df[col][i])})
     return HttpResponse(json.dumps(data), status=200)
 
+def graph(request,day_id):
+    country_name = get_object_or_404(Day, pk=day_id)
+    countries = Day.objects.all().filter(name=country_name)
+    for i in countries:
+        print(i.deaths,i.recoveries,i.cases)
 
 def index(request):
     return render(request, 'index.html')
