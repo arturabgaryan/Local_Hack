@@ -7,7 +7,7 @@ from .models import Day
 
 
 def cases(request):
-    df = pd.read_csv('..\..\..\cases.csv')
+    df = pd.read_csv('..\..\\cases.csv')
     data = {}
     obj = Day.objects.all()
     for o in obj:
@@ -29,7 +29,7 @@ def deaths(request):
 
 
 def recoveries(request):
-    df = pd.read_csv('..\..\..\recovery.csv')
+    df = pd.read_csv('..\..\\recovery.csv')
     data = {}
     for col in df.columns:
         if 'Unnamed' not in col:
@@ -45,9 +45,9 @@ def index(request):
 
 #
 # def bd(request):
-#     recoveries = pd.read_csv('..\..\..\recovery.csv')
-#     cases = pd.read_csv('..\..\..\cases.csv')
-#     deaths = pd.read_csv('..\..\..\deaths.csv')
+#     recoveries = pd.read_csv('..\..\\recovery.csv')
+#     cases = pd.read_csv('..\..\\cases.csv')
+#     deaths = pd.read_csv('..\..\\deaths.csv')
 #     for i in range(len(recoveries)):
 #         for col in recoveries.columns:
 #             if 'Unnamed' not in col:
@@ -72,7 +72,7 @@ def graph(request):
 
 
 def predict(request):
-    df = pd.read_csv('..\..\..\predictions.csv')
+    df = pd.read_csv('..\..\\predictions.csv')
     cases = df[0:7]
     deaths = df[7:14]
     recoveries = df[14:21]
