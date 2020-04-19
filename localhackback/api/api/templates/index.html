@@ -15,17 +15,21 @@
         .b-popup {
             width: 100%;
             min-height: 100%;
-            top: 0px;
-            left:0px;
             background-color: rgba(0, 0, 0, 0.5);
             overflow: hidden;
             position: fixed;
-
+            top: 0px;
+            left: 0px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
         }
 
         .b-popup .b-popup-content {
             margin: 40px auto 0px auto;
-            width: 200px;
+            width: 100%;
+            height: 100%;
             padding: 10px;
             background-color: #f7f7f783;
             border-radius: 5px;
@@ -39,6 +43,17 @@
 </head>
 <body>
 <div class="container" id="app">
+    <div class="b-popup" id="popup">
+    <div class="b-popup-content">
+        <div class="d-flex">
+            <p id="193"></p>
+            <div id="chart2"></div>
+            <div class="block"><a class="btn btn-primary"
+                                  href="javascript:PopUpHide()">Закрыть</a>
+            </div>
+        </div>
+    </div>
+</div>
     <a @click="mod(0)" href="javascript:void(0)" v-if="mode==0">
         <i class="fa fa-thermometer-full fa-4x" aria-hidden="false" style="color:red"></i>
     </a>
@@ -72,21 +87,10 @@
     <button type="button" class="btn btn-danger" id="11">Clear</button>
     {% verbatim %}
 
-    <input id="2" type="range" v-model="day" class="custom-range" min="1" max="84" step="1" value="1">
+    <input id="2" type="range" v-model="day" class="custom-range" min="1" max="91" step="1" value="1">
     <input type="hidden" v-bind:value=mode id="3">
     <input type="hidden" v-bind:value=date id="date">
     {% endverbatim %}
-    <div class="b-popup" id="popup">
-        <div class="b-popup-content">
-            <div class="d-flex">
-                <p id="193"></p>
-                <div id="chart2"></div>
-                <div class="block"><a class="btn btn-primary"
-                                      href="javascript:PopUpHide()">Закрыть</a>
-                </div>
-            </div>
-        </div>
-    </div>
 
 </div>
 {% load static %}
@@ -128,7 +132,7 @@
                     button.onclick = async function () {
                         let i = document.getElementById('2').value
                         interv = setInterval(async function () {
-                            if (i < 85) {
+                            if (i < 92) {
                                 console.log(i)
                                 let dat
                                 range.value = i
@@ -219,6 +223,7 @@
                         google.visualization.events.addListener(chart, 'select', function () {
                             let selection = chart.getSelection()[0].row;
                             PopUpShow(selection)
+                            makechart2(selection)
                         });
                     });
                     chart.draw(data, options);
@@ -268,7 +273,6 @@
 
     //Функция отображения PopUp
     function PopUpShow(text) {
-        document.getElementById('193').innerText = text
         $('#popup').show();
     }
 
@@ -278,7 +282,218 @@
         $('#popup').hide();
     }
 
-    async function makechart2() {
+    async function makechart2(num) {
+
+        google.charts.load('current', {'packages': ['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        async function drawChart() {
+            const countries = {
+                '-1': 'Unnamed: 0',
+                '0': 'Afghanistan',
+                '1': 'Albania',
+                '2': 'Algeria',
+                '3': 'Andorra',
+                '4': 'Angola',
+                '5': 'Antigua and Barbuda',
+                '6': 'Argentina',
+                '7': 'Armenia',
+                '8': 'Australia',
+                '9': 'Austria',
+                '10': 'Azerbaijan',
+                '11': 'Bahamas',
+                '12': 'Bahrain',
+                '13': 'Bangladesh',
+                '14': 'Barbados',
+                '15': 'Belarus',
+                '16': 'Belgium',
+                '17': 'Belize',
+                '18': 'Benin',
+                '19': 'Bhutan',
+                '20': 'Bolivia',
+                '21': 'Bosnia and Herzegovina',
+                '22': 'Botswana',
+                '23': 'Brazil',
+                '24': 'Brunei',
+                '25': 'Bulgaria',
+                '26': 'Burkina Faso',
+                '27': 'Burma',
+                '28': 'Burundi',
+                '29': 'Cabo Verde',
+                '30': 'Cambodia',
+                '31': 'Cameroon',
+                '32': 'Canada',
+                '33': 'Central African Republic',
+                '34': 'Chad',
+                '35': 'Chile',
+                '36': 'China',
+                '37': 'Colombia',
+                '38': 'Congo (Brazzaville)',
+                '39': 'Congo (Kinshasa)',
+                '40': 'Costa Rica',
+                '41': "Cote d'Ivoire",
+                '42': 'Croatia',
+                '43': 'Cuba',
+                '44': 'Cyprus',
+                '45': 'Czechia',
+                '46': 'Denmark',
+                '47': 'Diamond Princess',
+                '48': 'Djibouti',
+                '49': 'Dominica',
+                '50': 'Dominican Republic',
+                '51': 'Ecuador',
+                '52': 'Egypt',
+                '53': 'El Salvador',
+                '54': 'Equatorial Guinea',
+                '55': 'Eritrea',
+                '56': 'Estonia',
+                '57': 'Eswatini',
+                '58': 'Ethiopia',
+                '59': 'Fiji',
+                '60': 'Finland',
+                '61': 'France',
+                '62': 'Gabon',
+                '63': 'Gambia',
+                '64': 'Georgia',
+                '65': 'Germany',
+                '66': 'Ghana',
+                '67': 'Greece',
+                '68': 'Grenada',
+                '69': 'Guatemala',
+                '70': 'Guinea',
+                '71': 'Guinea-Bissau',
+                '72': 'Guyana',
+                '73': 'Haiti',
+                '74': 'Holy See',
+                '75': 'Honduras',
+                '76': 'Hungary',
+                '77': 'Iceland',
+                '78': 'India',
+                '79': 'Indonesia',
+                '80': 'Iran',
+                '81': 'Iraq',
+                '82': 'Ireland',
+                '83': 'Israel',
+                '84': 'Italy',
+                '85': 'Jamaica',
+                '86': 'Japan',
+                '87': 'Jordan',
+                '88': 'Kazakhstan',
+                '89': 'Kenya',
+                '90': 'Korea, South',
+                '91': 'Kosovo',
+                '92': 'Kuwait',
+                '93': 'Kyrgyzstan',
+                '94': 'Laos',
+                '95': 'Latvia',
+                '96': 'Lebanon',
+                '97': 'Liberia',
+                '98': 'Libya',
+                '99': 'Liechtenstein',
+                '100': 'Lithuania',
+                '101': 'Luxembourg',
+                '102': 'MS Zaandam',
+                '103': 'Madagascar',
+                '104': 'Malawi',
+                '105': 'Malaysia',
+                '106': 'Maldives',
+                '107': 'Mali',
+                '108': 'Malta',
+                '109': 'Mauritania',
+                '110': 'Mauritius',
+                '111': 'Mexico',
+                '112': 'Moldova',
+                '113': 'Monaco',
+                '114': 'Mongolia',
+                '115': 'Montenegro',
+                '116': 'Morocco',
+                '117': 'Mozambique',
+                '118': 'Namibia',
+                '119': 'Nepal',
+                '120': 'Netherlands',
+                '121': 'New Zealand',
+                '122': 'Nicaragua',
+                '123': 'Niger',
+                '124': 'Nigeria',
+                '125': 'North Macedonia',
+                '126': 'Norway',
+                '127': 'Oman',
+                '128': 'Pakistan',
+                '129': 'Panama',
+                '130': 'Papua New Guinea',
+                '131': 'Paraguay',
+                '132': 'Peru',
+                '133': 'Philippines',
+                '134': 'Poland',
+                '135': 'Portugal',
+                '136': 'Qatar',
+                '137': 'Romania',
+                '138': 'Russia',
+                '139': 'Rwanda',
+                '140': 'Saint Kitts and Nevis',
+                '141': 'Saint Lucia',
+                '142': 'Saint Vincent and the Grenadines',
+                '143': 'San Marino',
+                '144': 'Sao Tome and Principe',
+                '145': 'Saudi Arabia',
+                '146': 'Senegal',
+                '147': 'Serbia',
+                '148': 'Seychelles',
+                '149': 'Sierra Leone',
+                '150': 'Singapore',
+                '151': 'Slovakia',
+                '152': 'Slovenia',
+                '153': 'Somalia',
+                '154': 'South Africa',
+                '155': 'South Sudan',
+                '156': 'Spain',
+                '157': 'Sri Lanka',
+                '158': 'Sudan',
+                '159': 'Suriname',
+                '160': 'Sweden',
+                '161': 'Switzerland',
+                '162': 'Syria',
+                '163': 'Taiwan*',
+                '164': 'Tanzania',
+                '165': 'Thailand',
+                '166': 'Timor-Leste',
+                '167': 'Togo',
+                '168': 'Trinidad and Tobago',
+                '169': 'Tunisia',
+                '170': 'Turkey',
+                '171': 'US',
+                '172': 'Uganda',
+                '173': 'Ukraine',
+                '174': 'United Arab Emirates',
+                '175': 'United Kingdom',
+                '176': 'Uruguay',
+                '177': 'Uzbekistan',
+                '178': 'Venezuela',
+                '179': 'Vietnam',
+                '180': 'West Bank and Gaza',
+                '181': 'Western Sahara',
+                '182': 'Yemen',
+                '183': 'Zambia',
+                '184': 'Zimbabwe'
+            }
+            let data = await (await fetch(`http://127.0.0.1:8000/graph?day=${app.day - 1}&country=${countries[num]}`)).json()
+            let dat = [['Day', 'Infected', 'Deaths', 'Recoveries']]
+            for (let i = 0; i < data.length; i++) {
+                dat.push([i, data[i]['cases'], data[i]['deaths'], data[i]['recoveries']])
+            }
+            let da = google.visualization.arrayToDataTable(dat)
+            const options = {
+                title: countries[num],
+                curveType: 'function',
+                legend: {position: 'bottom'},
+                height: 1000,
+                width: 2000
+
+            };
+            const chart = new google.visualization.LineChart(document.getElementById('chart2'));
+            chart.draw(da, options)
+        }
+
 
     }
 </script>
