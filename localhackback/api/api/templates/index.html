@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script src="https://use.fontawesome.com/9be3b10e3d.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <style>
+
+        .b-popup {
+            width: 100%;
+            min-height: 100%;
+            top: 0px;
+            left:0px;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            position: fixed;
+
+        }
+
+        .b-popup .b-popup-content {
+            margin: 40px auto 0px auto;
+            width: 200px;
+            padding: 10px;
+            background-color: #f7f7f783;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px #000;
+        }
+
+        .block {
+            flex-grow: 1;
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <a @click="mod(0)" href="javascript:void(0)" v-if="mode==0">
+        <i class="fa fa-thermometer-full fa-4x" aria-hidden="false" style="color:red"></i>
+    </a>
+    <a @click="mod(0)" href="javascript:void(0)" v-else>
+        <i class="fa fa-thermometer-full fa-4x" aria-hidden="false" style="color:gray"></i>
+    </a>
+    <a @click="mod(1)" href="javascript:void(0)" v-if="mode==1">
+        <i class="fa fa-bomb fa-4x" aria-hidden="true" style="color:black"></i>
+    </a>
+    <a @click="mod(1)" href="javascript:void(0)" v-else>
+        <i class="fa fa-bomb fa-4x" aria-hidden="true" style="color:gray"></i>
+    </a>
+    <a @click="mod(2)" href="javascript:void(0)" v-if="mode==2">
+        <i class="fa fa-asterisk fa-4x" aria-hidden="true" style="color:blue"></i>
+    </a>
+    <a @click="mod(2)" href="javascript:void(0)" v-else>
+        <i class="fa fa-asterisk fa-4x" aria-hidden="true" style="color:gray"></i>
+    </a>
+    {% verbatim %}
+    <h3>Day: {{ day }}</h3>
+    <h3>Date: {{ getdate }}</h3>
+    {% endverbatim %}
+    <div class="d-flex justify-content-center" id="172">
+        <div class="spinner-border" role="status" style="width: 40rem; height: 40rem;">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <div id="chart"></div>
+    <button type="button" class="btn btn-primary" id="1">Play</button>
+    <button type="button" class="btn btn-primary" id="10">Pause</button>
+    <button type="button" class="btn btn-danger" id="11">Clear</button>
+    {% verbatim %}
+
+    <input id="2" type="range" v-model="day" class="custom-range" min="1" max="84" step="1" value="1">
+    <input type="hidden" v-bind:value=mode id="3">
+    <input type="hidden" v-bind:value=date id="date">
+    {% endverbatim %}
+    <div class="b-popup" id="popup">
+        <div class="b-popup-content">
+            <div class="d-flex">
+                <p id="193"></p>
+                <div id="chart2"></div>
+                <div class="block"><a class="btn btn-primary"
+                                      href="javascript:PopUpHide()">Закрыть</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% load static %}
+<script src="{% static "maps.js" %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    const app = new Vue({
+        el: '#app',
+        data: {
+
+            day: 1,
+            mode: 0,
+            date: '',
+        },
+        methods: {
+            main: async function () {
+                google.charts.load('current', {
+                    'packages': ['geochart'],
+                    'mapsApiKey': 'AIzaSyDTV2pQVHP1h8wjp5Kqj_xNInbQ4zl0dWE'
+                });
+
+
+                google.charts.setOnLoadCallback(drawRegionsMap);
+
+                async function drawRegionsMap() {
+                    const data = google.visualization.arrayToDataTable([['Country', 'Infected']]);
+
+                    let options = {
+                        colorAxis: {colors: ['red']},
+                    };
+                    const chart = new google.visualization.GeoChart(document.getElementById('chart'));
+                    button = document.getElementById('1')
+                    const range = document.getElementById('2')
+                    let a = await getdata()
+                    let cases = a[0]
+                    let deaths = a[1]
+                    let recoveries = a[2]
+                    let interv
+                    button.onclick = async function () {
+                        let i = document.getElementById('2').value
+                        interv = setInterval(async function () {
+                            if (i < 85) {
+                                console.log(i)
+                                let dat
+                                range.value = i
+                                app.day++
+                                const mode = document.getElementById('3').value
+                                if (mode == 0) {
+                                    dat = await getday(cases, i - 1, 'Infected')
+                                    options = {
+                                        colorAxis: {
+                                            values: [0, 10000, 25000, 70000, 100000, 200000, 500000, 1000000],
+                                            colors: ['#F5F5F5', '#FFC601', '#FF7A00', '#FF5E01', '#FF3900', '#FF1701', '#800015', '#40000B']
+                                        }
+                                    }
+                                } else if (mode == 1) {
+                                    dat = await getday(deaths, i - 1, 'Deaths')
+                                    options = {
+                                        colorAxis: {
+                                            values: [0, 1000, 5000, 10000, 15000, 20000, 30000],
+                                            colors: ['#F5F5F5', '#CCBDB6', '#8C827D', '#4D4744', '#403B39', '#332F2D', 'black']
+                                        }
+                                    }
+                                } else {
+                                    dat = await getday(recoveries, i - 1, 'Recoveries')
+                                    options = {
+                                        colorAxis: {
+                                            values: [0, 1000, 5000, 10000, 20000, 50000, 100000],
+                                            colors: ['#F5F5F5', '#15B8FF', '#1A76FF', '#143FFF', '#3609FF', '#2908BF', '#3E0980']
+                                        }
+                                    }
+                                }
+                                let data = await google.visualization.arrayToDataTable(dat)
+                                i++
+                                chart.draw(data, options)
+                            }
+                        }, 700)
+                    }
+                    range.onchange = async function () {
+                        clearInterval(interv)
+                        const mode = document.getElementById('3').value
+                        console.log(mode)
+                        const i = document.getElementById('2').value
+                        let dat = null
+                        if (mode == 0) {
+                            dat = await getday(cases, i, 'Infected')
+                            options = {
+                                colorAxis: {
+                                    values: [0, 10000, 25000, 70000, 100000, 200000, 500000, 1000000],
+                                    colors: ['#F5F5F5', '#FFC601', '#FF7A00', '#FF5E01', '#FF3900', '#FF1701', '#800015', '#40000B']
+                                }
+                            }
+                        } else if (mode == 1) {
+                            dat = await getday(deaths, i, 'Deaths')
+                            options = {
+                                colorAxis: {
+                                    values: [0, 1000, 5000, 10000, 15000, 20000, 30000],
+                                    colors: ['#F5F5F5', '#CCBDB6', '#8C827D', '#4D4744', '#403B39', '#332F2D', 'black']
+                                }
+                            }
+                        } else {
+                            dat = await getday(recoveries, i, 'Recoveries')
+                            options = {
+                                colorAxis: {
+                                    values: [0, 1000, 5000, 10000, 20000, 50000, 100000],
+                                    colors: ['#F5F5F5', '#15B8FF', '#1A76FF', '#143FFF', '#3609FF', '#2908BF', '#3E0980']
+                                }
+                            }
+                        }
+                        const data = await google.visualization.arrayToDataTable(dat);
+
+                        chart.draw(data, options)
+                    }
+
+                    let button2 = document.getElementById('10')
+                    button2.onclick = function () {
+                        clearInterval(interv)
+                    }
+                    let button3 = document.getElementById('11')
+                    button3.onclick = function () {
+                        clearInterval(interv)
+                        range.value = 0
+                        chart.clearChart()
+                        const data = google.visualization.arrayToDataTable([['Country', 'Infected']])
+                        chart.draw(data, {})
+                    }
+                    const load = document.getElementById('172')
+                    load.innerHTML = ''
+                    google.visualization.events.addListener(chart, 'ready', function () {
+                        google.visualization.events.addListener(chart, 'select', function () {
+                            let selection = chart.getSelection()[0].row;
+                            PopUpShow(selection)
+                        });
+                    });
+                    chart.draw(data, options);
+                }
+            }
+
+            ,
+            mod: function (i) {
+                this.mode = i
+                document.getElementById('3').value = i
+                $('#2').change()
+            }
+        },
+        mounted: function () {
+            this.main()
+        },
+        computed: {
+            getdate: function () {
+                const i = this.day
+                if (i < 32) {
+                    if (i > 9) {
+                        return `2020-01-${i}`
+                    } else {
+                        return `2020-01-0${i}`
+                    }
+                } else if (i < 61) {
+                    if (i > 40) {
+                        return `2020-02-${i - 31}`
+                    } else {
+                        return `2020-02-0${i - 31}`
+                    }
+                } else {
+                    if (i > 69) {
+                        return `2020-03-${i - 60}`
+                    } else {
+                        return `2020-03-0${i - 60}`
+                    }
+                }
+            }
+        }
+    })
+</script>
+<script>
+    $(document).ready(function () {
+        PopUpHide()
+    });
+
+    //Функция отображения PopUp
+    function PopUpShow(text) {
+        document.getElementById('193').innerText = text
+        $('#popup').show();
+    }
+
+    //Функция скрытия PopUp
+    function PopUpHide() {
+        document.getElementById('193').innerText = ''
+        $('#popup').hide();
+    }
+
+    async function makechart2() {
+
+    }
+</script>
+</body>
+</html>
