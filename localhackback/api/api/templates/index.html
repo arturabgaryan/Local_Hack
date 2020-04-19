@@ -476,7 +476,7 @@
                 '183': 'Zambia',
                 '184': 'Zimbabwe'
             }
-            let data = await (await fetch(`http://127.0.0.1:8000/graph?day=${app.day - 1}&country=${countries[num]}`)).json()
+            let data = await (await fetch(`http://84.201.175.170:8000/graph?day=${app.day - 1}&country=${countries[num]}`)).json()
             let dat = [['Day', 'Infected', 'Deaths', 'Recoveries']]
             for (let i = 0; i < data.length; i++) {
                 dat.push([i, data[i]['cases'], data[i]['deaths'], data[i]['recoveries']])
