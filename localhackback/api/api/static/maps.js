@@ -49,9 +49,9 @@ async function getday(cases, i, str) {
 }
 
 async function getdata() {
-    const cases = await (await fetch('http://127.0.0.1:8000/cases')).json()
-    const deaths = await (await fetch('http://127.0.0.1:8000/deaths')).json()
-    const recoveries = await (await fetch('http://127.0.0.1:8000/recoveries')).json()
+    const cases = await (await fetch('http://84.201.175.170:8000/cases')).json()
+    const deaths = await (await fetch('http://84.201.175.170:8000/deaths')).json()
+    const recoveries = await (await fetch('http://84.201.175.170:8000/recoveries')).json()
     return [cases, deaths, recoveries]
 }
 
